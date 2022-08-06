@@ -58,12 +58,6 @@ const Container = styled.div`
   border-radius: 20px;
   position: relative;
   background-color: #fff;
-
-  /* button {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-  }  */
 `
 
 const Head = styled.header`
