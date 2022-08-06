@@ -1,26 +1,36 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Routes, Route } from "react-router-dom";
+import styled, { createGlobalStyle } from 'styled-components';
+import Login from "./pages/login/Login";
+import Todo from "./pages/todo/Todo";
+import Main from "./pages/main/Main";
+import NotFound from "./pages/error/NotFound";
 
-function App() {
+const GlobalStyle = createGlobalStyle`
+  body {
+    background-color: #e9ecef;
+  }
+`
+
+const App = () => {
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <Container>
+      <GlobalStyle />
+      <Routes>
+        <Route path='/' element={<Main />} />
+        <Route path='/todo' element={<Todo />} />
+        <Route path='/auth' element={<Login />} />
+        <Route path='/*' element={<NotFound />}/>
+      </Routes>
+    </Container>
+  )
 }
 
 export default App;
+
+const Container = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+`
