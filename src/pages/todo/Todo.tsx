@@ -18,7 +18,6 @@ const Todo = () => {
   const [todoList, setTodoList] = useState<LocalTodoType[]>([]);
   const [open, setOpen] = useState(false);
 
-
   const today = new Date();
   const dateString = today.toLocaleDateString('ko-KR', {
     year: 'numeric',
@@ -58,13 +57,18 @@ const Todo = () => {
     }
   });
 
+  const restTodo = (): number => {
+    const rest = todoList.filter(todo => !todo.done);
+    return rest.length;
+  }
+
   return (  
     <Container>
       <Head>
         <h1>Todo List.....</h1>
         <HeadBottom>
           <h1>
-            할일 2개 남음
+            할일 {restTodo()}개 남음
           </h1>
           <h2>
             {dateString}
@@ -72,9 +76,13 @@ const Todo = () => {
         </HeadBottom>
       </Head>
       {
-        data && <TodoList todoList={todoList} status={status}/>
+        status === 'loading' && (
+          <Loading>Loading....</Loading>
+        )
       }
-      {/* <TodoList /> */}
+      {
+        data && <TodoList todoList={todoList} setTodoList={setTodoList}/>
+      }
       <TodoBtn onClick={onToggle} open={open}/>
       <Btn onClick={logOutHandler} position='absolute' top={1} right={1}>로그아웃</Btn>
     </Container>
@@ -121,4 +129,14 @@ const HeadBottom = styled.div`
   h2 {
     color: #aaa;
   }
+`
+
+const Loading = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 2rem;
+  font-weight: bold;
+  letter-spacing: 2px;
 `

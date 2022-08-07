@@ -6,7 +6,7 @@ type InputProps = {
 }
 
 const Input = ({ type, placeholder }: InputProps) => {
-  return <InputBox type={type} placeholder={placeholder}/> 
+  return <InputBox type={type} placeholder={placeholder} /> 
 }
 
 export default Input;

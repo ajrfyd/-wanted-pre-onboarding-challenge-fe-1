@@ -11,6 +11,11 @@ export const validEmail = (email: string): boolean => {
 export const useLogin = () => {
   const { login } = useSelector((state: RootState) => state);
   return login;
+};
+
+export const useTodo = () => {
+  const { todo } = useSelector((state: RootState) => state);
+  return todo;
 }
 
 export const email_reg = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;

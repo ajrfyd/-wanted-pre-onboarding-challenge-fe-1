@@ -1,33 +1,50 @@
 import styled, { css } from "styled-components";
 import { MdDone, MdDelete } from 'react-icons/md';
+import { BsPencilSquare } from 'react-icons/bs'
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { modifyToggle } from '../../store/todo/actions';
 
 type TodoItemProps = {
   done: boolean;
   title: string;
   content?: string;
+  id: string;
   onClick: () => void;
+  doneTodoHandler: () => void;
 }
 
 type Props = {
   done: boolean;
 }
 
-const TodoItem = ({ done, title, content, onClick }: TodoItemProps) => {
+const TodoItem = ({ id, done, title, content, onClick, doneTodoHandler }: TodoItemProps) => {
+  const [detail, setDetail] = useState(false);
+  const dispatch = useDispatch();
 
   return (
+    <>
+    
     <Container>
-      <CheckBtn done={done}>
+      <CheckBtn done={done} onClick={doneTodoHandler}>
         { 
           done && <MdDone/>
         }
       </CheckBtn>
-      <Text done={done}>
+      <Text done={done} onClick={() => setDetail(prev => !prev)}>
         { title }
       </Text>
+      <ModifyBtn onClick={() => dispatch(modifyToggle(id))}>
+        <BsPencilSquare />
+      </ModifyBtn>
       <DeleteBtn onClick={onClick}>
         <MdDelete />
       </DeleteBtn>
     </Container>
+      {
+        detail && <Detail>{content}</Detail>
+      }
+    </>
   )
 }
 
@@ -42,9 +59,25 @@ const DeleteBtn = styled.div`
   cursor: pointer;
   transition: .2s;
   opacity: 0;
+  margin-left: 1rem;
 
   &:hover {
     color: red;
+  }
+`
+
+const ModifyBtn = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #eee;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: .2s;
+  opacity: 0;
+
+  &:hover {
+    color: #6fb56f;
   }
 `
 
@@ -57,7 +90,11 @@ const Container = styled.div`
     ${DeleteBtn} {
       opacity: 1;
     }
+    ${ModifyBtn} {
+      opacity: 1;
+    }
   }
+
 `
 
 
@@ -81,9 +118,16 @@ const CheckBtn = styled.div<Props>`
 
 const Text = styled.div<Props>`
   flex: 1;
-  font-size: 1rem;
+  font-size: 1.5rem;
   color: #888;
   ${({ done }) => done && css`
     color: #ced4da;
   `}
+
+  cursor: pointer;
+`
+
+const Detail = styled.p`
+  font-size: 1rem;
+  padding-left: 4rem;
 `

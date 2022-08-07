@@ -1,33 +1,59 @@
 import styled from "styled-components";
 import TodoItem from "./TodoItem";
-import { useMutation } from "react-query";
-import axios, { AxiosError } from "axios";
+import { useMutation, useQueryClient } from "react-query";
+import axios, { Axios, AxiosError } from "axios";
 import { LocalTodoType } from './todoTypes';
+import { Dispatch, SetStateAction } from 'react';
 
 type TodoListProps = {
   todoList: LocalTodoType[];
-  status: "loading" | "error" | "idle" | "success"
+  setTodoList: Dispatch<SetStateAction<LocalTodoType[]>>
 }
 
-const TodoList = ({ todoList, status }: TodoListProps) => {
-  
-  const deleteTodo = (id: string) => {
-    console.log(id)
+type DeletResponseType = {
+  config: unknown;
+  data: {
+    data: null;
+  }
+  headers: unknown;
+  request: unknown;
+  status: number;
+  statusText: string;
+}
+
+const TodoList = ({ todoList, setTodoList }: TodoListProps) => {
+  const queryClient = useQueryClient();
+
+  const deleteTodo = async (id: string) => {
+    const localData = await localStorage.getItem('userState');
+    if(!localData) return;
+
+    const { token } = JSON.parse(localData);
+    const data = await axios.delete(`http://localhost:8080/todos/${id}`, {
+      headers: {
+        Authorization: `Bearer: ${token}`
+      }
+    })
+    return data;
   };
 
-  // const deleteMutation = useMutation((id: string) => {
+  const deleteMutation = useMutation(deleteTodo, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('getTodoList')
+    }
+  })
 
-  // }, {
-
-  // })
-
-  if(status === 'loading') return <div style={{ flex: 1 }}>Loading....</div>
-  if(status === 'error') return <div>Error!!!</div>
+  const doneTodoHandler = (id: string) => {
+    // const todo = todoList.find(todo => todo.id === id);
+    setTodoList(prev => {
+      return prev.map(todo => todo.id === id ? {...todo, done: !todo.done} : todo);
+    })
+  };
 
   return (
     <Container>
       {
-        todoList.map(todo => <TodoItem key={todo.id} title={todo.title} done={todo.done} content={todo.content} onClick={() => deleteTodo(todo.id)} />)
+        todoList.map(todo => <TodoItem key={todo.id} id={todo.id} title={todo.title} done={todo.done} content={todo.content} onClick={() => deleteMutation.mutate(todo.id)} doneTodoHandler={() => doneTodoHandler(todo.id)}/>)
       }
     </Container>
   )
