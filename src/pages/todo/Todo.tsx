@@ -7,11 +7,24 @@ import { useNavigate } from "react-router-dom";
 import BorderTemplate from "../../components/BorderTemplate";
 import TodoList from "./TodoList";
 import TodoBtn from './TodoBtn';
+import { getTodoList } from "../../utils/utils";
+import { LocalTodoType, TodoType, QueryReturnType } from "./todoTypes";
+import { useQuery } from "react-query";
+import { AxiosError } from "axios";
 
 const Todo = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [todoList, setTodoList] = useState<LocalTodoType[]>([]);
   const [open, setOpen] = useState(false);
+
+
+  const today = new Date();
+  const dateString = today.toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
 
   const logOutHandler = async () => {
     await localStorage.removeItem('userState');
@@ -32,13 +45,36 @@ const Todo = () => {
 
   const onToggle = () => setOpen(prev => !prev);
 
+  const { data, status } = useQuery<TodoType[], AxiosError, QueryReturnType, string>('getTodoList', getTodoList, {
+    onSuccess: (res) => {
+      const { data } = res;
+      const localData = data.map(item => {
+        return {
+          ...item,
+          done: false
+        }
+      })
+      setTodoList(localData);
+    }
+  });
+
   return (  
     <Container>
       <Head>
         <h1>Todo List.....</h1>
-        <div>할일 2개 남음</div>
+        <HeadBottom>
+          <h1>
+            할일 2개 남음
+          </h1>
+          <h2>
+            {dateString}
+          </h2>
+        </HeadBottom>
       </Head>
-      <TodoList />
+      {
+        data && <TodoList todoList={todoList} status={status}/>
+      }
+      {/* <TodoList /> */}
       <TodoBtn onClick={onToggle} open={open}/>
       <Btn onClick={logOutHandler} position='absolute' top={1} right={1}>로그아웃</Btn>
     </Container>
@@ -53,8 +89,6 @@ const Container = styled.div`
   box-shadow: 5px 5px 10px rgba(0, 0, 0, .5);
   display: flex;
   flex-direction: column;
-  /* align-items: center; */
-  /* justify-content: space-around; */
   border-radius: 20px;
   position: relative;
   background-color: #fff;
@@ -64,18 +98,27 @@ const Head = styled.header`
   padding: 3rem 2rem 1rem 2rem;
   border-bottom: 1px solid #eee;
 
-  h1 {
-    text-align: center;
-    font-size: 2.5rem;
-    font-weight: bold;
-    letter-spacing: .2rem;
-  }
-
   div {
     margin-top: 2rem;
     font-size: 1.2rem;
     font-weight: bold;
-    color: #20c997;
     letter-spacing: 2px;
+  }
+`
+
+const HeadBottom = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    letter-spacing: .2rem;
+    color: #20c997;
+  }
+
+  h2 {
+    color: #aaa;
   }
 `

@@ -1,16 +1,34 @@
 import styled from "styled-components";
 import TodoItem from "./TodoItem";
+import { useMutation } from "react-query";
+import axios, { AxiosError } from "axios";
+import { LocalTodoType } from './todoTypes';
 
-const TodoList = () => {
+type TodoListProps = {
+  todoList: LocalTodoType[];
+  status: "loading" | "error" | "idle" | "success"
+}
+
+const TodoList = ({ todoList, status }: TodoListProps) => {
+  
+  const deleteTodo = (id: string) => {
+    console.log(id)
+  };
+
+  // const deleteMutation = useMutation((id: string) => {
+
+  // }, {
+
+  // })
+
+  if(status === 'loading') return <div style={{ flex: 1 }}>Loading....</div>
+  if(status === 'error') return <div>Error!!!</div>
 
   return (
     <Container>
-      <TodoItem text='React' done={false} />
-      <TodoItem text='Angular' done />
-      <TodoItem text='Vue' done />
-      <TodoItem text='JavaScript' done />
-      <TodoItem text='Svelt' done />
-      <TodoItem text='TypeScript' done />
+      {
+        todoList.map(todo => <TodoItem key={todo.id} title={todo.title} done={todo.done} content={todo.content} onClick={() => deleteTodo(todo.id)} />)
+      }
     </Container>
   )
 }

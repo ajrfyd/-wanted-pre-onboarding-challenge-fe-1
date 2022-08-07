@@ -2,6 +2,7 @@ import styled, { css } from 'styled-components';
 import { MdAdd } from 'react-icons/md';
 import { useMutation } from 'react-query';
 import axios, { AxiosError } from 'axios';
+import Input from '../../components/Input';
 
 type TodoBtnProps = {
   onClick: () => void;
@@ -29,14 +30,15 @@ const TodoBtn = ({ onClick, open }: TodoBtnProps) => {
 
   return (
     <>
-      <Container onClick={test} open={open}>
+      <Container onClick={onClick} open={open}>
         <MdAdd />
       </Container>
       {
         open && (
           <InsertTodoArea>
             <InsertForm>
-              Wow!
+              <Input type='text' placeholder='할일을 입력 후, Enter key를 누르세요.'/>
+              <textarea name="" id="" ></textarea>
             </InsertForm>
           </InsertTodoArea>
         )
@@ -101,8 +103,18 @@ const InsertTodoArea = styled.div`
 
 const InsertForm = styled.form`
   background-color: #eee;
-  padding: 2rem;
+  padding: 3rem;
   border-bottom-left-radius: 1rem;
   border-bottom-right-radius: 1rem;
   border-top: 1px solid #eee;
+
+  input {
+    width: 100%;
+  }
+
+  textarea {
+    border: none;
+    outline: none;
+    width: 100%;
+  }
 `

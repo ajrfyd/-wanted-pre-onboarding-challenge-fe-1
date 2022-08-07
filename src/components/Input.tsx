@@ -2,10 +2,11 @@ import styled from "styled-components";
 
 type InputProps = {
   type: string;
+  placeholder?: string;
 }
 
-const Input = ({ type }: InputProps) => {
-  return <InputBox type={type}/> 
+const Input = ({ type, placeholder }: InputProps) => {
+  return <InputBox type={type} placeholder={placeholder}/> 
 }
 
 export default Input;

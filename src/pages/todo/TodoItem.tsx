@@ -3,14 +3,16 @@ import { MdDone, MdDelete } from 'react-icons/md';
 
 type TodoItemProps = {
   done: boolean;
-  text: string;
+  title: string;
+  content?: string;
+  onClick: () => void;
 }
 
 type Props = {
   done: boolean;
 }
 
-const TodoItem = ({ done, text }: TodoItemProps) => {
+const TodoItem = ({ done, title, content, onClick }: TodoItemProps) => {
 
   return (
     <Container>
@@ -20,9 +22,9 @@ const TodoItem = ({ done, text }: TodoItemProps) => {
         }
       </CheckBtn>
       <Text done={done}>
-        { text }
+        { title }
       </Text>
-      <DeleteBtn>
+      <DeleteBtn onClick={onClick}>
         <MdDelete />
       </DeleteBtn>
     </Container>
