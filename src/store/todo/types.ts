@@ -1,4 +1,4 @@
-import { modifyToggle } from "./actions";
+import { modifyToggle, formToggle } from "./actions";
 
 export type State = {
   modify: boolean;
@@ -6,4 +6,5 @@ export type State = {
 };
 
 export type ActionType = 
-  | ReturnType<typeof modifyToggle>;
+  | ReturnType<typeof modifyToggle>
+  | ReturnType<typeof formToggle>

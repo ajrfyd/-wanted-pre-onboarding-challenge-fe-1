@@ -1,4 +1,4 @@
-import { MODIFY_TOGGLE } from "./actions";
+import { MODIFY_TOGGLE, FORM_TOGGLE } from './actions';
 import { State, ActionType } from "./types";
 const initialState: State = {
   modify: false,
@@ -12,6 +12,17 @@ const todoReducer = (state = initialState, action: ActionType) => {
         ...state,
         modify: !state.modify,
         modifyId: state.modify ? '' : action.payload
+      }
+    case FORM_TOGGLE:
+      if(state.modifyId !== '') {
+        return {
+          ...state,
+          modifyId: '',
+        }
+      }
+      return {
+        ...state,
+
       }
     default:
       return state;

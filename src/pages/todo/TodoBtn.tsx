@@ -91,7 +91,13 @@ const TodoBtn = ({ onClick, open }: TodoBtnProps) => {
         (open || modify) && (
           <InsertTodoArea>
             <InsertForm onSubmit={onSubmit}>
-              <input ref={titleRef} type='text' placeholder='할일을 입력 해 주세요.' autoFocus />
+              <input 
+                ref={titleRef} 
+                type='text' 
+                placeholder='할일을 입력 해 주세요.' 
+                autoFocus
+                // value={modify}
+              />
               <textarea 
                 ref={contentRef}
                 rows={3}
