@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from 'react-query';
 import axios, { AxiosError } from 'axios';
 import Input from '../../components/Input';
 import { useState, useRef } from 'react';
-import { useTodo } from '../../utils/utils';
+import { useTodoState } from '../../utils/utils';
 
 type TodoBtnProps = {
   onClick: () => void;
@@ -19,7 +19,7 @@ const TodoBtn = ({ onClick, open }: TodoBtnProps) => {
   const titleRef = useRef<HTMLInputElement>(null);
   const contentRef = useRef<HTMLTextAreaElement>(null);
   const queryClient = useQueryClient();
-  const { modify, modifyId } = useTodo();
+  const { modify, modifyId } = useTodoState();
 
   const createTodo = async () => {
     const storage = await localStorage.getItem('userState');

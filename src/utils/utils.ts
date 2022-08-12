@@ -2,18 +2,19 @@ import { useSelector } from "react-redux";
 import { RootState } from "../store";
 import { TodoType } from "../pages/todo/todoTypes";
 import axios, { AxiosError } from "axios";
+import baseReqApi from "../api/axios";
 
 export const validEmail = (email: string): boolean => {
   
   return false;
 }
 
-export const useLogin = () => {
+export const useLoginState = () => {
   const { login } = useSelector((state: RootState) => state);
   return login;
 };
 
-export const useTodo = () => {
+export const useTodoState = () => {
   const { todo } = useSelector((state: RootState) => state);
   return todo;
 }
@@ -26,10 +27,18 @@ export const getTodoList = async () => {
   const localData = await localStorage.getItem('userState');
   if(!localData) return [];
   const { token } = JSON.parse(localData);
-  const { data } = await axios.get('http://localhost:8080/todos', {
+  const { data } = await baseReqApi.get('/todos', {
     headers: {
       Authorization: `Bearer ${token}`
     }
   });
   return data;
 }
+
+export const signUpFormSubmitHandler = (email: string, password: string) => {
+
+};
+
+export const loginFormSubmitHandler = (email: string, password: string) => {
+  
+};

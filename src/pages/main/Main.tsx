@@ -4,12 +4,12 @@ import Btn from "../../components/Btn";
 import { useNavigate } from "react-router-dom";
 import { needLogin, needSignup, reqLogin } from '../../store/login';
 import { useDispatch } from 'react-redux';
-import { useLogin } from '../../utils/utils';
+import { useLoginState } from '../../utils/utils';
 
 const Main = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loginState } = useLogin();
+  const { loginState } = useLoginState();
 
   const loginHandler = (num: number) => {
     num === 1 ? dispatch(needLogin()) : dispatch(needSignup());

@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
-import { useLogin } from "../../utils/utils";
+import { useLoginState } from "../../utils/utils";
 import { BiLeftArrowCircle } from 'react-icons/bi';
 import { useNavigate } from "react-router-dom";
-import Form from "../../components/Form";
+import Form from "./Form";
 
 const Login = () => {
-  const { signUp } = useLogin();
+  const { signUp } = useLoginState();
   const navigate = useNavigate();
 
   return (
