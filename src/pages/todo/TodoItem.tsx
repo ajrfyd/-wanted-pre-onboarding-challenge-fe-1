@@ -122,6 +122,7 @@ const Text = styled.div<Props>`
   color: #888;
   ${({ done }) => done && css`
     color: #ced4da;
+    text-decoration: line-through;
   `}
 
   cursor: pointer;

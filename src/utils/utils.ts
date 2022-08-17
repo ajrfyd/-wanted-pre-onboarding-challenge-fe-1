@@ -42,3 +42,7 @@ export const signUpFormSubmitHandler = (email: string, password: string) => {
 export const loginFormSubmitHandler = (email: string, password: string) => {
   
 };
+
+export const validPwd = (pwd: string) => {
+  return pwd_reg.test(pwd);
+}

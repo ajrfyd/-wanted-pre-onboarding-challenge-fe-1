@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import styled from 'styled-components';
 import Btn from '../../components/Btn';
-import { email_reg, pwd_reg, signUpFormSubmitHandler, loginFormSubmitHandler } from '../../utils/utils';
+import { email_reg, pwd_reg, signUpFormSubmitHandler, loginFormSubmitHandler, validPwd } from '../../utils/utils';
 import { useMutation, UseMutationResult } from 'react-query';
 import axios, { AxiosError } from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -16,8 +16,8 @@ import baseReqApi from '../../api/axios';
 const Form = ({ signUp }: FormType) => {
   const [valid, setValid] = useState({
     valid: false,
-    email: false,
-    password: false,
+    email: '',
+    password: '',
   });
 
   const [alertText, setAlertText] = useState('');
@@ -58,35 +58,64 @@ const Form = ({ signUp }: FormType) => {
     //     setIsOpen(true);
     //   }
     // }
+
+
+    // ! 
+    // console.log('submit!')
     if(emailRef.current && signUp && passwordRef.current) {
-      signUpFormSubmitHandler(emailRef.current.value, passwordRef.current.value);
+      if(!emailRef.current.value || !passwordRef.current.value) emptyInputHandler();
+
+
+      signupMutation.mutate({
+              email: emailRef.current.value,
+              password: passwordRef.current.value
+            });
+      // signUpFormSubmitHandler(emailRef.current.value, passwordRef.current.value);
     } else if(emailRef.current && !signUp && passwordRef.current) {
-      loginFormSubmitHandler(emailRef.current?.value, passwordRef.current?.value);
+      if(!emailRef.current.value || !passwordRef.current.value) emptyInputHandler();
+      // loginFormSubmitHandler(emailRef.current?.value, passwordRef.current?.value);
+      loginMutation.mutate({
+              email: emailRef.current.value,
+              password: passwordRef.current.value
+            })
+
     }
   }
 
+  const validCheckOnBlur = (form: 'email' | 'password') => {
+    if(!emailRef.current || !passwordRef.current) return;
+    if(form === 'email' && emailRef.current.value.length <= 8) emailRef.current.focus();
+    if(form === 'password' && passwordRef.current.value.length <= 8) passwordRef.current.focus();
+  };
+
   const emailValidCheck = () => {
     if(!emailRef.current) return;
+    if(emailRef.current.value.length <= 8) return;
+    
     if(email_reg.test(emailRef.current.value)) {
-      setValid(prev => ({ ...prev, email: true }));
+      setValid(prev => ({ ...prev, email: '' }));
     } else {
-      setValid(prev => ({ ...prev, email: false }));
+      setValid(prev => ({ ...prev, email: '@, 특수문자 포함 8자 이상이어야 합니다.' }));
       emailRef.current.focus();
     }
   }
 
   const pwdValidCheck = () => {
     if(!passwordRef.current) return;
+    if(passwordRef.current.value.length <= 8) return;
 
-    if(pwd_reg.test(passwordRef.current.value)) {
-      if(!signUp) {
-        setValid(prev => ({ ...prev, password: true, valid: true }));
-      }
-      setValid(prev => ({ ...prev, password: true }));
-    } else {
-      setValid(prev => ({ ...prev, password: false }));
-      // passwordRef.current.focus();
-    }
+    const isValid = validPwd(passwordRef.current.value);
+
+    isValid ? setValid(prev => ({ ...prev, password: '' })) : setValid(prev => ({ ...prev, password: '비밀번호는 특수문자를 포함한 8자 이상입니다.'}))
+    // if(pwd_reg.test(passwordRef.current.value)) {
+    //   if(!signUp) {
+    //     setValid(prev => ({ ...prev, password: '', valid: true }));
+    //   } else {
+    //     setValid(prev => ({ ...prev, password: '' }));
+    //   }
+    // } else {
+    //   setValid(prev => ({ ...prev, password: '비밀번호는 특수문자를 포함한 8자 이상입니다.' }));
+    // }
   }
 
   const comparePwd = () => {
@@ -94,7 +123,7 @@ const Form = ({ signUp }: FormType) => {
     if(rePasswordRef.current.value === '') return;
     if(passwordRef.current.value !== rePasswordRef.current.value) {
       rePasswordRef.current.focus();
-      setValid(prev => ({ ...prev, password: false }));
+      setValid(prev => ({ ...prev, password: '비밀번호가 일치하지 않습니다.' }));
     } else {
       setValid(prev => ({ ...prev, valid: true }));
     }
@@ -143,17 +172,25 @@ const Form = ({ signUp }: FormType) => {
     },
   });
 
+  const emptyInputHandler = () => {
+    setAlertText('모든 입력값은 필수 입니다.');
+    setIsOpen(true);
+    return;
+  }
+
   
   return (
     <FormContainer >
+      {valid.email}
+      {valid.password}
       <FormBox onSubmit={submitHandler}>
         <label htmlFor="">
           이메일 주소 
           {/* {valid.email === true ? null : 'e-mail주소의 형식에 맞지 않습니다'} */}
         </label>
-        <input type="email" ref={emailRef} onBlur={emailValidCheck}/>
+        <input type="text" ref={emailRef} onChange={emailValidCheck} onBlur={() => validCheckOnBlur('email')}/>
         <label htmlFor="">비밀번호</label>
-        <input type="password" ref={passwordRef} onBlur={pwdValidCheck}/>
+        <input type="password" ref={passwordRef} onChange={pwdValidCheck} onBlur={() => validCheckOnBlur('password')}/>
         {
           signUp ? (
             <>
