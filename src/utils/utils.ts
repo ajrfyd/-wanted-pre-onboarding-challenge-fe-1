@@ -4,10 +4,6 @@ import { TodoType } from "../pages/todo/todoTypes";
 import axios, { AxiosError } from "axios";
 import baseReqApi from "../api/axios";
 
-export const validEmail = (email: string): boolean => {
-  
-  return false;
-}
 
 export const useLoginState = () => {
   const { login } = useSelector((state: RootState) => state);
@@ -19,9 +15,7 @@ export const useTodoState = () => {
   return todo;
 }
 
-export const email_reg = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 // export const pwd_reg = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
-export const pwd_reg = /^(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
 
 export const getTodoList = async () => {
   const localData = await localStorage.getItem('userState');
@@ -35,14 +29,6 @@ export const getTodoList = async () => {
   return data;
 }
 
-export const signUpFormSubmitHandler = (email: string, password: string) => {
-
-};
-
-export const loginFormSubmitHandler = (email: string, password: string) => {
-  
-};
-
-export const validPwd = (pwd: string) => {
-  return pwd_reg.test(pwd);
+export const setLocalStorage = (key: string, data: string) => {
+  localStorage.setItem(key, data);
 }

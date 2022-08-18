@@ -4,5 +4,9 @@ import { ServerResData,  LoginType } from "./type";
 import { AxiosError } from 'axios';
 
 export const useLoginMutation = (options?: UseMutationOptions<ServerResData, AxiosError, LoginType>) => {
-  return useMutation<ServerResData, AxiosError, LoginType>(reqLogin, options);
-}
+  return useMutation(reqLogin, options);
+};
+
+export const useSignupMutation = (options?: UseMutationOptions<ServerResData, AxiosError, LoginType>) => {
+  return useMutation(reqSignup, options);
+};

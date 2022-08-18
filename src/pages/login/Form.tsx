@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import styled from 'styled-components';
 import Btn from '../../components/Btn';
-import { email_reg, pwd_reg, signUpFormSubmitHandler, loginFormSubmitHandler, validPwd } from '../../utils/utils';
+import { email_reg, pwd_reg, validPwd } from './utils';
 import { useMutation, UseMutationResult } from 'react-query';
 import axios, { AxiosError } from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -10,6 +10,8 @@ import { useDispatch } from 'react-redux';
 import Alert from '../../components/Alert';
 import { FormType, SignupType, LoginType, ServerResData, ResponseType } from './type';
 import baseReqApi from '../../api/axios';
+import { useLoginMutation, useSignupMutation } from './hooks';
+import { setLocalStorage } from '../../utils/utils';
 
 
 
@@ -65,20 +67,14 @@ const Form = ({ signUp }: FormType) => {
     if(emailRef.current && signUp && passwordRef.current) {
       if(!emailRef.current.value || !passwordRef.current.value) emptyInputHandler();
 
-
-      signupMutation.mutate({
-              email: emailRef.current.value,
-              password: passwordRef.current.value
-            });
-      // signUpFormSubmitHandler(emailRef.current.value, passwordRef.current.value);
+      // signupMutation.mutate({
+      //         email: emailRef.current.value,
+      //         password: passwordRef.current.value
+      //       });
+      signupMutate({ email: emailRef.current.value, password: passwordRef.current.value });
     } else if(emailRef.current && !signUp && passwordRef.current) {
       if(!emailRef.current.value || !passwordRef.current.value) emptyInputHandler();
-      // loginFormSubmitHandler(emailRef.current?.value, passwordRef.current?.value);
-      loginMutation.mutate({
-              email: emailRef.current.value,
-              password: passwordRef.current.value
-            })
-
+      loginMutate({ email: emailRef.current.value, password: passwordRef.current.value });
     }
   }
 
@@ -129,48 +125,81 @@ const Form = ({ signUp }: FormType) => {
     }
   }
 
-  const signupMutation = useMutation<ResponseType, AxiosError, SignupType>((userInfo: SignupType) => {
-    return baseReqApi.post('/users/create', userInfo);
-  }, {
-    onSuccess: (data) => {
-      if(data.status === 200) {
-        setAlertText(data.data.message + '. 가입하신 정보로 로그인 해 주세요.');
-        setIsOpen(true);
-        setTimeout(() => navigate('/') ,3000)
-      }
-    },
-    onError: (e) => {
-      console.log(e);
-    }
-  })
-
-
-  const loginMutation = useMutation<ResponseType, AxiosError, LoginType>((userInfo: LoginType): Promise<ResponseType> => {
-    return baseReqApi.post('/users/login', userInfo);
-  }, {
+  const { mutate: loginMutate } = useLoginMutation({
     onSuccess: (resData, reqData) => {
-      if(resData && resData.status === 200) {
-        const { data: { token } } = resData;
-        const { email } = reqData;
 
         const userInfo = {
-          email,
-          token
+          email: reqData.email,
+          token: resData.token
         }
+        setLocalStorage('userState', JSON.stringify(userInfo));
 
-        localStorage.setItem('userState', JSON.stringify(userInfo));
-        dispatch(reqLogin(email));
+        dispatch(reqLogin(reqData.email));
+
         navigate('/todo', {
           replace: true
         });
-      }
     },
-    onError: (e) => {
-      setAlertText('이메일 혹은 비밀번호가 정확하지 않습니다.')
+    onError: (resData, reqData) => {
+      setAlertText('이메일 혹은 비밀번호가 일치하지 않습니다.');
       setIsOpen(true);
-      // throw new Error(e.message);
-    },
+    }
   });
+
+  const { mutate: signupMutate } = useSignupMutation({
+    onSuccess: (resData, reqData) => {
+      setAlertText(resData.message + '. 가입하신 정보로 로그인 해 주세요.');
+      setIsOpen(true);
+      setTimeout(() => navigate(-1), 2000);
+    },
+    onError: (resData) => {
+      setAlertText('이미 존재하는 메일주소 입니다.');
+      setIsOpen(true);
+    }
+  })
+
+  // const signupMutation = useMutation<ResponseType, AxiosError, SignupType>((userInfo: SignupType) => {
+  //   return baseReqApi.post('/users/create', userInfo);
+  // }, {
+  //   onSuccess: (data) => {
+  //     if(data.status === 200) {
+  //       setAlertText(data.data.message + '. 가입하신 정보로 로그인 해 주세요.');
+  //       setIsOpen(true);
+  //       setTimeout(() => navigate('/') ,3000)
+  //     }
+  //   },
+  //   onError: (e) => {
+  //     console.log(e);
+  //   }
+  // })
+
+
+  // const loginMutation = useMutation<ResponseType, AxiosError, LoginType>((userInfo: LoginType): Promise<ResponseType> => {
+  //   return baseReqApi.post('/users/login', userInfo);
+  // }, {
+  //   onSuccess: (resData, reqData) => {
+  //     if(resData && resData.status === 200) {
+  //       const { data: { token } } = resData;
+  //       const { email } = reqData;
+
+  //       const userInfo = {
+  //         email,
+  //         token
+  //       }
+
+  //       localStorage.setItem('userState', JSON.stringify(userInfo));
+  //       dispatch(reqLogin(email));
+  //       navigate('/todo', {
+  //         replace: true
+  //       });
+  //     }
+  //   },
+  //   onError: (e) => {
+  //     setAlertText('이메일 혹은 비밀번호가 정확하지 않습니다.')
+  //     setIsOpen(true);
+  //     // throw new Error(e.message);
+  //   },
+  // });
 
   const emptyInputHandler = () => {
     setAlertText('모든 입력값은 필수 입니다.');
@@ -178,7 +207,6 @@ const Form = ({ signUp }: FormType) => {
     return;
   }
 
-  
   return (
     <FormContainer >
       {valid.email}
